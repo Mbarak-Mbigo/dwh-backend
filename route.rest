@@ -1,0 +1,54 @@
+// registeredPatients
+POST http://localhost:3001/registeredPatients
+Content-Type: application/json
+
+{
+"facilityCode": "61ab43214f721a3e6cd39dc1",
+  "level": 5,
+  "month": "November",
+  "year": 2021,
+  "totalRegisteredPatients": 1000,
+  "dataSummary": {
+    "male": 600,
+    "female": 1400,
+    "ageGroups": {
+      "0-4": 50,
+      "5-14": 100,
+      "15-24": 100,
+      "25-34": 100,
+      "35-44": 150,
+      "45-54": 75,
+      "55-64": 200,
+      "65-74": 60,
+      "75-84": 100,
+      "85-94": 40,
+      "95-104": 20,
+      "105 and over": 5
+    }
+  }
+}
+
+###
+GET http://localhost:3001/registeredPatientsSummary
+
+###
+
+GET http://localhost:3001/registeredPatientsSummary/61ab42f64f721a3e6cd39dbd
+
+###
+// healthFacility
+POST  http://localhost:3001/healthFacility
+Content-Type: application/json
+
+{
+  "facilityName": "Kilifi County Hospital",
+  "county": "Kilifi",
+  "level": 7
+}
+
+###
+GET http://localhost:3001/healthFacility/61ab60e819eec17b1f8f73dc
+
+
+###
+GET http://localhost:3001/healthFacility
