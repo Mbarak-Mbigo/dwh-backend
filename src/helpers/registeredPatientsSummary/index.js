@@ -21,7 +21,7 @@ const getRegisteredPatientsSummariesByFacility = async (facilityId) => {
     }
 
     const summaries = await RegisteredPatients.find({
-      _facilityId: facilityId,
+      facilityCode: facilityId,
     });
     if (summaries) return summaries;
 
@@ -34,12 +34,14 @@ const getRegisteredPatientsSummariesByFacility = async (facilityId) => {
 const createRegisteredPatientSummaryRecord = async (req, res) => {
   try {
     const facility = await getFacilityById(req.body.facilityCode);
+    console.log("relatd facility", facility);
     if (!facility) {
+      console.log("failed!!!!!!!!!");
       throw new InvalidData(`Invalid facilityCode: ${req.body.facilityCode}`);
     }
 
     const newRecord = await RegisteredPatients({
-      _facilityId: facility._id,
+      facilityCode: req.body.facilityCode, // map relation
       month: req.body.month,
       year: req.body.year,
       totalRegisteredPatients: req.body.totalRegisteredPatients,
@@ -82,9 +84,72 @@ const createRegisteredPatientSummaryRecord = async (req, res) => {
     }
 
     res.status(500).json({
-      error,
+      error: error.message,
       data: null,
     });
+  }
+};
+
+const getRegisteredPatientsSummariesMonthYear = async (monthyear) => {
+  console.log("monthyear", monthyear);
+  try {
+    const summaries = await RegisteredPatients.aggregate([
+      {
+        $project: {
+          mnthYr: {
+            $concat: [
+              { $substr: ["$month", 0, -1] },
+              "-",
+              { $substr: ["$year", 0, -1] },
+            ],
+          },
+          totalRegisteredPatients: 1,
+          dataSummary: 1,
+          male: 1,
+          female: 1,
+          year: 1,
+          month: 1,
+          ageGroupsData: 1,
+        },
+      },
+      { $match: { mnthYr: monthyear } },
+    ]);
+    if (summaries) return summaries;
+
+    return [];
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getSummariesAggregateRecords = async () => {
+  try {
+    const summaries = await RegisteredPatients.aggregate([
+      {
+        $project: {
+          mnthYr: {
+            $concat: [
+              { $substr: ["$month", 0, -1] },
+              "-",
+              { $substr: ["$year", 0, -1] },
+            ],
+          },
+          totalRegisteredPatients: 1,
+          dataSummary: 1,
+          male: 1,
+          female: 1,
+          year: 1,
+          month: 1,
+          ageGroupsData: 1,
+        },
+      },
+      // { $match: { mnthYr: monthyear } },
+    ]);
+    if (summaries) return summaries;
+
+    return [];
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -92,4 +157,6 @@ module.exports = {
   createRegisteredPatientSummaryRecord,
   getRegisteredPatientsSummariesRecords,
   getRegisteredPatientsSummariesByFacility,
+  getRegisteredPatientsSummariesMonthYear,
+  getSummariesAggregateRecords,
 };

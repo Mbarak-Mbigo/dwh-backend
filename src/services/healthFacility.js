@@ -2,7 +2,9 @@ const {
   createFacilityRecord,
   getFacilityById,
   getAllFacilities,
+  getFacilitiesAndSubmissions,
 } = require("../helpers/healthFacilities");
+
 const createFacility = async (req, res) => {
   try {
     const record = await createFacilityRecord(req);
@@ -54,8 +56,26 @@ const getFacility = async (req, res) => {
   }
 };
 
+const getAllFacilitesSubmissions = async (req, res) => {
+  try {
+    const records = await getFacilitiesAndSubmissions();
+    if (records) {
+      res.json({
+        error: null,
+        data: records,
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      error: error.message,
+      data: null,
+    });
+  }
+};
+
 module.exports = {
   createFacility,
   getFacilities,
   getFacility,
+  getAllFacilitesSubmissions,
 };

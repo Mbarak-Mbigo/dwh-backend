@@ -3,6 +3,7 @@ const { HealthFacility } = require("../../models");
 const createFacilityRecord = async (req) => {
   try {
     const newFacility = await HealthFacility({
+      facilityId: req.body.facilityId,
       facilityName: req.body.facilityName,
       county: req.body.county,
       level: req.body.level,
@@ -13,22 +14,21 @@ const createFacilityRecord = async (req) => {
       return savedFacility;
     }
 
-    throw Error("Error creating facility record");
+    throw new Error("Error creating facility record");
   } catch (error) {
     throw error;
   }
 };
-const getFacilityById = async (req) => {
+const getFacilityById = async (facilityCode) => {
   try {
-    const facility = await HealthFacility.findById({
-      _id: req.params.facilityId,
+    const facility = await HealthFacility.find({
+      facilityId: facilityCode,
     });
-
     if (facility) {
       return facility;
     }
 
-    throw Error(`Failed to get Facility record ${req.params.facilityId}`);
+    throw new Error(`Failed to get Facility record ${facilityCode}`);
   } catch (error) {
     throw error;
   }
@@ -41,7 +41,48 @@ const getAllFacilities = async () => {
     if (facilities) {
       return facilities;
     }
-    throw Error("Failed to get facilities");
+    throw new Error("Failed to get facilities");
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getFacilitiesAndSubmissions = async () => {
+  try {
+    const facilitiesSummariesAggregate = await HealthFacility.aggregate([
+      {
+        $lookup: {
+          from: "registeredpatients",
+          as: "submissions",
+          let: { facilityId: "$facilityId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$facilityCode", "$$facilityId"],
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          __v: 0,
+          _id: 0,
+          "submissions.facilityCode": 0,
+          "submissions._id": 0,
+          "submissions.__v": 0,
+          "submissions.dataSummary.ageGroupsData._id": 0,
+        },
+      },
+    ]);
+
+    if (facilitiesSummariesAggregate) {
+      return facilitiesSummariesAggregate;
+    }
+    return [];
+    // throw Error("Failed to get facilities");
   } catch (error) {
     throw error;
   }
@@ -51,4 +92,5 @@ module.exports = {
   createFacilityRecord,
   getFacilityById,
   getAllFacilities,
+  getFacilitiesAndSubmissions,
 };

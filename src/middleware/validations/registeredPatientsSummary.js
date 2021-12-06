@@ -2,6 +2,7 @@ const yup = require("yup");
 
 const RegisteredPatientsSummaryReqBodySchema = yup.object({
   body: yup.object({
+    facilityCode: yup.number().required(),
     month: yup.string().required(),
     year: yup.number().required(),
     totalRegisteredPatients: yup.number().required(),

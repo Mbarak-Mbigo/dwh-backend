@@ -2,11 +2,17 @@ const {
   createRegisteredPatientSummaryRecord,
   getRegisteredPatientsSummariesRecords,
   getRegisteredPatientsSummariesByFacility,
+  getRegisteredPatientsSummariesMonthYear,
+  getSummariesAggregateRecords,
 } = require("../helpers/registeredPatientsSummary");
 
 const createRegisteredPatientSummary = async (req, res) => {
+  console.log("reg");
   try {
-    await createRegisteredPatientSummaryRecord(req, res);
+    const record = await createRegisteredPatientSummaryRecord(req, res);
+    if (record) {
+      return record;
+    }
   } catch (error) {
     res.json({
       error,
@@ -54,8 +60,56 @@ const getFacilityRegisteredPatientsSummaries = async (req, res) => {
   }
 };
 
+const getRegisteredPatientsSummariesByMonthYear = async (req, res) => {
+  try {
+    const records = await getRegisteredPatientsSummariesMonthYear(
+      req.params.monthyear
+    );
+    if (records) {
+      return res.json({
+        error: null,
+        data: records,
+      });
+    }
+
+    res.status(404).json({
+      error: "Records not found",
+      data: null,
+    });
+  } catch (error) {
+    res.status(404).json({
+      error: `Records not found ${error}`,
+      data: null,
+    });
+  }
+};
+
+const getSummariesAggregate = async (req, res) => {
+  try {
+    const records = await getSummariesAggregateRecords(req);
+    if (records) {
+      return res.json({
+        error: null,
+        data: records,
+      });
+    }
+
+    res.status(404).json({
+      error: "Records not found",
+      data: null,
+    });
+  } catch (error) {
+    res.status(404).json({
+      error: `Records not found ${error}`,
+      data: null,
+    });
+  }
+};
+
 module.exports = {
   createRegisteredPatientSummary,
   getRegisteredPatientsSummaries,
   getFacilityRegisteredPatientsSummaries,
+  getRegisteredPatientsSummariesByMonthYear,
+  getSummariesAggregate,
 };

@@ -66,9 +66,9 @@ const AgeGroups = new Schema({
 });
 
 const registeredPatientsSchema = Schema({
-  _facilityId: {
-    type: Schema.Types.ObjectId,
-    ref: "HealthFacility",
+  facilityCode: {
+    type: Number,
+    required: true,
   },
   month: {
     type: String, // Jan to Dec | 0 - 11

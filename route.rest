@@ -1,9 +1,9 @@
 // registeredPatients
-POST http://localhost:3001/registeredPatients
+POST http://localhost:3001/registeredPatientsSummary
 Content-Type: application/json
 
 {
-"facilityCode": "61ab43214f721a3e6cd39dc1",
+  "facilityCode": 2,
   "level": 5,
   "month": "November",
   "year": 2021,
@@ -33,7 +33,13 @@ GET http://localhost:3001/registeredPatientsSummary
 
 ###
 
-GET http://localhost:3001/registeredPatientsSummary/61ab42f64f721a3e6cd39dbd
+GET http://localhost:3001/registeredPatientsSummary/1
+
+###
+GET http://localhost:3001/registeredPatientsSummary/category/aggregate
+
+###
+GET http://localhost:3001/healthFacility/registeredPatientsSummary/November-2021
 
 ###
 // healthFacility
@@ -41,14 +47,18 @@ POST  http://localhost:3001/healthFacility
 Content-Type: application/json
 
 {
-  "facilityName": "Kilifi County Hospital",
-  "county": "Kilifi",
-  "level": 7
+  "facilityName": "Kinangop",
+  "facilityId": 4,
+  "county": "Nairobi",
+  "level": 4
 }
 
 ###
-GET http://localhost:3001/healthFacility/61ab60e819eec17b1f8f73dc
+GET http://localhost:3001/healthFacility/1
 
 
 ###
 GET http://localhost:3001/healthFacility
+
+###
+GET http://localhost:3001/healthFacility/submissions
